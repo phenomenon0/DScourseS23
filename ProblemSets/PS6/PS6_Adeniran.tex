@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{PS6_Adeniran}
+\author{femi adeniran}
+\date{March 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{The Data }
+The data was retrieve from statbomb api using the statbombpy package, the amount of data is humongous as it contain several levels and leagues and different types of data. Information on teams, players , tournaments, events in games, coordinates etc.
+\section{ Cleaning }
+Initially some values werent in metric had to clean up and also I used transformation techniques to make new rows of values not immediately evident like in pass maps. 
+
+I extract location and passing end locations from x/y data coordinates and convert it into a list with pandas, then in turn into a numpy array
+\section{ Packages}
+
+I used a few packages to achieve this, original made the script with jupyter, statbombpy for data  and visualization from mplsoccer with pitch drawings
+
+
+
+\end{document}
