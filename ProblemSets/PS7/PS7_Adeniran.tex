@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{booktabs} % Required for nicer horizontal rules in tables
+\usepackage{siunitx} % Required for alignment of numerical columns
+
+\title{PS7}
+\author{femi adeniran}
+\date{February 2023}
+
+\begin{document}
+\maketitle
+\begin{table}
+\centering
+\begin{tabular}[t]{lrrrrrrr}
+\toprule
+  & Unique (\#) & Missing (\%) & Mean & SD & Min & Median & Max\\
+\midrule
+logwage & 670 & 25 & \num{1.6} & \num{0.4} & \num{0.0} & \num{1.7} & \num{2.3}\\
+hgc & 16 & 0 & \num{13.1} & \num{2.5} & \num{0.0} & \num{12.0} & \num{18.0}\\
+tenure & 259 & 0 & \num{6.0} & \num{5.5} & \num{0.0} & \num{3.8} & \num{25.9}\\
+age & 13 & 0 & \num{39.2} & \num{3.1} & \num{34.0} & \num{39.0} & \num{46.0}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l S[table-format=-1.3] S[table-format=-1.3] S[table-format=-1.3]}
+        \toprule
+        & {first} & {listwise} & {mean}\\
+        \midrule
+        (Intercept) & 0.534 & 0.534 & 0.708\\
+                     & (0.146) & (0.146) & (0.116)\\
+        hgc          & 0.062 & 0.062 & 0.050\\
+                     & (0.005) & (0.005) & {(0.004)}\\
+        collegenot college grad & 0.145 & 0.145 & 0.168\\
+                     & (0.034) & (0.034) & (0.026)\\
+        tenure      & 0.050 & 0.050 & 0.038\\
+                     & (0.005) & (0.005) & (0.004)\\
+                     & -0.002 & -0.002 & -0.001\\
+                     & (0.000) & (0.000) & (0.000)\\
+        age         & 0.000 & 0.000 & 0.000\\
+                     & (0.003) & (0.003) & (0.002)\\
+        marriedsingle & -0.022 & -0.022 & -0.027\\
+                     & (0.018) & (0.018) & (0.014)\\
+        \midrule
+        Num.Obs. & {1669} & {1669} & {2229}\\
+        R2 & 0.208 & 0.208 & 0.147\\
+        R2 Adj. & 0.206 & 0.206 & 0.145\\
+        AIC & 1179.9 & 1179.9 & 1091.2\\
+        BIC & 1223.2 & 1223.2 & 1136.8\\
+        Log.Lik. & {-581.936} & {-581.936} & {-537.580}\\
+        RMSE & 0.34 & 0.34 & 0.31\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Results}
+
+With the value of $\beta$ known, we see that mean imputation works best in the missing data format we are operating in.
+\section{Progress}
+There has been considerable progress in gathering data and creating a simple model for the application i want to build
+
+\end{document}
