@@ -1,89 +1,111 @@
-# Load necessary packages
-install.packages("nloptr")
-install.packages("modelsummary")
-library(nloptr)
-library(modelsummary)
-library(broom)
-
-# Generate data
-set.seed(100)
-N <- 100000
-K <- 10
-X <- matrix(rnorm(N * (K - 1)), nrow = N, ncol = K - 1)
-X <- cbind(1, X)
-eps <- rnorm(N)
-
-# Set the new true value of beta
-true_beta <- c(1.5, -1, -0.25, 0.75, 3.5, -2, 0.5, 1, 1.25, 2)
-
-# Generate y vector with the new true_beta
-y <- X %*% true_beta + eps
-
-# OLS closed-form solution
-beta_hat_OLS <- solve(t(X) %*% X) %*% (t(X) %*% y)
-
-# Gradient descent
-iterations <- 1000
-learning_rate <- 0.0000003
-beta_hat_GD <- rep(0, K)
-
-for (i in 1:iterations) {
-  gradient <- -2/N * t(X) %*% (y - X %*% beta_hat_GD)
-  beta_hat_GD <- beta_hat_GD - learning_rate * gradient
-}
-
-# Define the negative log-likelihood function
-negative_log_likelihood <- function(theta) {
-  N <- length(y)
-  beta <- theta[1:(length(theta) - 1)]
-  sigma <- theta[length(theta)]
-  residuals <- y - X %*% beta
-  log_likelihood <- -0.5 * N * log(2 * pi) - 0.5 * N * log(sigma^2) - sum(residuals^2) / (2 * sigma^2)
-  return(-log_likelihood)
-}
-
-# Gradient function (provided)
-gradient <- function(theta, Y, X) {
-  grad <- as.vector(rep(0, length(theta)))
-  beta <- theta[1:(length(theta) - 1)]
-  sig <- theta[length(theta)]
-  grad[1:(length(theta) - 1)] <- -t(X) %*% (Y - X %*% beta) / (sig^2)
-  grad[length(theta)] <- dim(X)[1] / sig - crossprod(Y - X %*% beta) / (sig^3)
-  return(grad)
-}
-
-# Create a wrapper function for the gradient to match nloptr's function signature
-gradient_wrapper <- function(theta) {
-  return(gradient(theta, y, X))
-}
-
-# Initialize theta with zeros and an initial guess for sigma
-init_theta <- c(rep(0, K), 1)
-
-# Compute beta_hat_MLE using L-BFGS algorithm
-result_MLE <- nloptr(x0 = init_theta,
-                     eval_f = negative_log_likelihood,
-                     eval_grad_f = gradient_wrapper,
-                     algorithm = "NLOPT_LD_LBFGS",
-                     opts = list(ftol_rel = 1.0e-8))
-
-theta_hat_MLE <- result_MLE$solution
-beta_hat_MLE <- theta_hat_MLE[1:K]
-sigma_hat_MLE <- theta_hat_MLE[length(theta_hat_MLE)]
-
-# Compare the MLE estimate with the true value of beta
-print("MLE estimate of beta:")
-print(beta_hat_MLE)
-print("MLE estimate of sigma:")
-print(sigma_hat_MLE)
+library(tidyverse)
+library(tidymodels)
+library(rsample)
+install.packages('glmnet')
+library(magrittr)
+housing <- read_table("http://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data", col_names = FALSE)
+names(housing) <- c("crim","zn","indus","chas","nox","rm","age","dis","rad","tax","ptratio","b","lstat","medv")
+set.seed(12345)
+housing_split <- initial_split(housing, prop = 0.8)
+housing_train <- training(housing_split)
+housing_test  <- testing(housing_split)
+housing_recipe <- recipe (medv ~ ., data = housing ) %>%
+  # convert outcome variable to logs
+  step_log( all_outcomes ()) %>%
+  # convert 0/1 chas to a factor
+  step_bin2factor(chas) %>%
+  # create interaction term between crime and nox
+  step_interact( terms = ~ crim:zn:indus:rm:age:rad:tax:
+                   ptratio :b: lstat:dis:nox) %>%
+  # create square terms of some continuous variables
+  step_poly(crim ,zn ,indus ,rm ,age ,rad ,tax ,ptratio ,b,
+             lstat ,dis ,nox , degree =6)
+# Run the recipe
+housing_prep <- housing_recipe %>% prep( housing_train , retain
+                                             = TRUE)
+housing_train_prepped <- housing_prep %>% juice
+housing_test_prepped <- housing_prep %>% bake(new_data = housing_test)
 
 
-model_lm <- lm(y ~ X - 1)
 
-# Create model summary
-summary_lm <- modelsummary(model_lm)
+# create x and y training and test data
+housing_train_x <- housing_train_prepped %>% select(-medv)
+housing_test_x <- housing_test_prepped %>% select(-medv)
+housing_train_y <- housing_train_prepped %>% select( medv)
+housing_test_y <- housing_test_prepped %>% select( medv)
 
-# Save the model summary to a .tex file
-modelsummary(summary_lm, output = "regression_summary.tex")
 
+
+
+tune_spec <- linear_reg(
+  penalty = tune(), # tuning parameter
+  mixture = 1       # 1 = lasso, 0 = ridge
+) %>% 
+  set_engine("glmnet") %>%
+  set_mode("regression")
+# define a grid over which to try different values of lambda
+lambda_grid <- grid_regular(penalty(), levels = 50)
+# 10-fold cross-validation
+rec_folds <- vfold_cv(housing_train_prepped, v = 10)
+# Workflow
+rec_wf <- workflow() %>%
+  add_formula(log(medv) ~ .) %>%
+  add_model(tune_spec) #%>%
+#add_recipe(housing_recipe)
+# Tuning results
+rec_res <- rec_wf %>%
+  tune_grid(
+    resamples = rec_folds,
+    grid = lambda_grid
+  )
+top_rmse  <- show_best(rec_res, metric = "rmse")
+best_rmse <- select_best(rec_res, metric = "rmse")
+# Now train with tuned lambda
+final_lasso <- finalize_workflow(rec_wf, best_rmse)
+# Print out results in test set
+last_fit(final_lasso, split = housing_split) %>%
+  collect_metrics() %>% print
+# show best RMSE
+top_rmse %>% print(n = 1)
+
+# ... (previous code remains the same)
+
+# Ridge regression
+ridge_tune_spec <- linear_reg(
+  penalty = tune(), # tuning parameter
+  mixture = 0       # 0 = ridge
+) %>% 
+  set_engine("glmnet") %>%
+  set_mode("regression")
+
+# ... (rest of the code remains the same)
+
+# Workflow
+ridge_rec_wf <- workflow() %>%
+  add_formula(log(medv) ~ .) %>%
+  add_model(ridge_tune_spec)
+
+# Tuning results
+ridge_rec_res <- ridge_rec_wf %>%
+  tune_grid(
+    resamples = rec_folds,
+    grid = lambda_grid
+  )
+
+ridge_top_rmse  <- show_best(ridge_rec_res, metric = "rmse")
+ridge_best_rmse <- select_best(ridge_rec_res, metric = "rmse")
+
+# Now train with tuned lambda
+ridge_final_model <- finalize_workflow(ridge_rec_wf, ridge_best_rmse)
+
+# Print out results in test set
+ridge_last_fit <- last_fit(ridge_final_model, split = housing_split)
+ridge_last_fit_metrics <- ridge_last_fit %>%
+  collect_metrics()
+
+# Output metrics
+print(ridge_last_fit_metrics)
+
+# Show best Ridge RMSE
+print(ridge_top_rmse, n = 1)
 
