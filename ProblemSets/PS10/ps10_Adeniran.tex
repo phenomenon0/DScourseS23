@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{PS9_Adeniran}
+\author{femi adeniran}
+\date{April 2023}
+\maketitle
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\hline
+penalty & estimate & alg   & cost\_complexity & tree\_depth & min\_n & hidden\_units & neighbors \\ \hline
+0.00    & 0.85     & logit &                 &            &       &              &           \\
+        & 0.86     & tree  & 0.00            & 10.00       & 10.00 &              &           \\
+1.00    & 0.85     & nnet  &                 &            &       & 5.00         &           \\
+        & 0.84     & knn   &                 &            &       &              & 24.00      \\ \hline
+\end{tabular}
+\caption{Model comparison}
+\label{tab:model_comparison}
+\end{table}
+\section{Brief  Analysis}
+The results are quite similar in accuracy no massive difference. The decision tree is the best it is easy to interpret but with a depth of 10 it is most likely guilty of over fitting
+
+\end{document}
