@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{siunitx}
+
+\begin{document}
+
+
+
+\begin{table}
+\centering
+\begin{tabular}[t]{lrrrrrrr}
+\toprule
+  & Unique (\#) & Missing (\%) & Mean & SD & Min & Median & Max\\
+\midrule
+logwage & 1546 & 31 & \num{1.7} & \num{0.7} & \num{-1.0} & \num{1.7} & \num{4.2}\\
+hgc & 14 & 0 & \num{12.5} & \num{2.4} & \num{5.0} & \num{12.0} & \num{18.0}\\
+college & 2 & 0 & \num{0.1} & \num{0.3} & \num{0.0} & \num{0.0} & \num{1.0}\\
+exper & 1932 & 0 & \num{6.4} & \num{4.9} & \num{0.0} & \num{6.0} & \num{25.0}\\
+married & 2 & 0 & \num{0.6} & \num{0.5} & \num{0.0} & \num{1.0} & \num{1.0}\\
+kids & 2 & 0 & \num{0.4} & \num{0.5} & \num{0.0} & \num{0.0} & \num{1.0}\\
+union & 2 & 0 & \num{0.2} & \num{0.4} & \num{0.0} & \num{0.0} & \num{1.0}\\
+\bottomrule
+\end{tabular}
+\caption{Summary statistics of the dataset}
+\end{table}
+
+
+\section{Missing Data }
+Seems to be missing at random there is no apparent explanantion for it being missing that can be ascertained from the data-set although from a social standpoint one could say that maybe people didnt want to let others know what their salary is.
+
+
+\begin{tabular}{lrrrrr}
+\hline
+& Estimate & Std. Error & t value & Pr(\textgreater|t|) & \\ 
+\hline
+(Intercept) & 0.911787 & 0.135133 & 6.747 & 2.13e-11 & *** \\
+hgc & 0.059042 & 0.009035 & 6.535 & 8.62e-11 & *** \\
+union.L & 0.156733 & 0.061809 & 2.536 & 0.01132 & * \\
+college.L & -0.046061 & 0.074747 & -0.616 & 0.53784 & \\
+exper & 0.050359 & 0.012646 & 3.982 & 7.15e-05 & *** \\
+I(exper\textasciicircum 2) & -0.003691 & 0.001176 & -3.137 & 0.00174 & ** \\
+\hline
+\multicolumn{6}{c}{Residual standard error: 0.676 on 1539 degrees of freedom (684 observations deleted due to missingness)}\\
+\hline
+\end{tabular}
+
+
+\begin{table}
+\begin{tabular}{lrrrrr}
+\hline
+& Estimate & Std. Error & t value & Pr(\textgreater|t|) & \\
+\hline
+(Intercept) & 0.911787 & 0.135133 & 6.747 & 2.13e-11 & *** \\
+hgc & 0.059042 & 0.009035 & 6.535 & 8.62e-11 & *** \\
+union.L & 0.156733 & 0.061809 & 2.536 & 0.01132 & * \\
+college.L & -0.046061 & 0.074747 & -0.616 & 0.53784 & \\
+exper & 0.050359 & 0.012646 & 3.982 & 7.15e-05 & *** \\
+I(exper\textasciicircum 2) & -0.003691 & 0.001176 & -3.137 & 0.00174 & ** \\
+\hline
+\multicolumn{6}{c}{Residual standard error: 0.676 on 1539 degrees of freedom}\\
+\multicolumn{6}{c}{Multiple R-squared: 0.03784, Adjusted R-squared: 0.03472}\\
+\multicolumn{6}{c}{F-statistic: 12.11 on 5 and 1539 DF, p-value: 1.596e-11}\\
+\hline
+\end{tabular}
+\begin{tabular}{lrrrrr}
+\hline
+& Estimate & Std. Error & t value & Pr(\textgreater|t|) & \\
+\hline
+(Intercept) & 0.911787 & 0.135133 & 6.747 & 2.13e-11 & *** \\
+hgc & 0.059042 & 0.009035 & 6.535 & 8.62e-11 & *** \\
+union.L & 0.156733 & 0.061809 & 2.536 & 0.01132 & * \\
+college.L & -0.046061 & 0.074747 & -0.616 & 0.53784 & \\
+exper & 0.050359 & 0.012646 & 3.982 & 7.15e-05 & *** \\
+I(exper\textasciicircum 2) & -0.003691 & 0.001176 & -3.137 & 0.00174 & ** \\
+\hline
+\multicolumn{6}{c}{Residual standard error: 0.676 on 1539 degrees of freedom}\\
+\multicolumn{6}{c}{Multiple R-squared: 0.03784, Adjusted R-squared: 0.03472}\\
+\multicolumn{6}{c}{F-statistic: 12.11 on 5 and 1539 DF, p-value: 1.596e-11}\\
+\hline
+\end{tabular}
+
+
+
+\begin{tabular}[t]{lccc}
+\toprule
+  & (1) & (2) & (3)\\
+\midrule
+(Intercept) & \num{0.912} & \num{0.912} & \num{1.120}\\
+ & (\num{0.135}) & (\num{0.135}) & (\num{0.091})\\
+hgc & \num{0.059} & \num{0.059} & \num{0.036}\\
+ & (\num{0.009}) & (\num{0.009}) & (\num{0.006})\\
+union.L & \num{0.157} & \num{0.157} & \num{0.048}\\
+ & (\num{0.062}) & (\num{0.062}) & (\num{0.033})\\
+college.L & \num{-0.046} & \num{-0.046} & \num{-0.089}\\
+ & (\num{0.075}) & (\num{0.075}) & (\num{0.034})\\
+exper & \num{0.050} & \num{0.050} & \num{0.021}\\
+ & (\num{0.013}) & (\num{0.013}) & (\num{0.007})\\
+ & \num{-0.004} & \num{-0.004} & \num{-0.001}\\
+ & (\num{0.001}) & (\num{0.001}) & (\num{0.000})\\
+\midrule
+Num.Obs. & \num{1545} & \num{1545} & \num{2229}\\
+R2 & \num{0.038} & \num{0.038} & \num{0.020}\\
+R2 Adj. & \num{0.035} & \num{0.035} & \num{0.018}\\
+AIC & \num{3182.4} & \num{3182.4} & \num{3808.4}\\
+BIC & \num{3219.8} & \num{3219.8} & \num{3848.4}\\
+Log.Lik. & \num{-1584.189} & \num{-1584.189} & \num{-1897.193}\\
+F &  & \num{12.106} & \num{9.207}\\
+RMSE & \num{0.67} & \num{0.67} & \num{0.57}\\
+\bottomrule
+\end{tabular}
+\caption{Model summaries of regressions}
+The LaTeX code for the remaining text is:
+
+\subsection*{Results}
+
+The summary of the data in Table 1 shows that logwage has a high percentage (31 percent) of missing values. This missingness is suspected to be MAR as there is no apparent reason why it would be MNAR. The approach taken to deal with the missing values was to use mean imputation, which is a common method used in such cases. The data was split into two sets, one containing only complete cases and the other containing the mean-imputed data. A linear regression model was fitted to both datasets using the lm() function in R. The model formula used was $logwage \sim hgc + union + college + exper + I(exper^2)$.
+
+The results of the analysis for the complete cases dataset are presented in Table 2. The coefficients for hgc, union, exper, and I(exper^2) are statistically significant at the 5 percent  level. The coefficients for college are not significant. The adjusted R-squared value is 0.0347, indicating that the model explains only a small amount of the variation in the data.
+
+The results of the analysis for the mean-imputed dataset are presented in Table 3. The coefficients for hgc, union, exper, and I(exper^2) are also statistically significant at the 5 percent  level. The coefficients for college are not significant. The adjusted R-squared value is 0.0351, which is similar to the value obtained for the complete cases dataset. The results show that mean imputation did not have a significant impact on the model's coefficients or R-squared value.
+\end{table}
+
+\end{document}
